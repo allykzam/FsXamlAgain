@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!-- See https://stackoverflow.com/questions/43921992/how-can-i-use-beforebuild-and-afterbuild-targets-with-visual-studio-2017 -->
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.WindowsDesktop" />
+  <Import Project="..\..\netfx.props" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <UseWPF>true</UseWPF>
+    <TargetFrameworks>netcoreapp3.0;net45</TargetFrameworks>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+  </PropertyGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.WindowsDesktop" />
+  <ItemGroup>
+    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypes.fsi">
+      <Paket>True</Paket>
+      <Link>paket-files/ProvidedTypes.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypes.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/ProvidedTypes.fs</Link>
+    </Compile>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Contracts.fs" />
+    <Compile Include="Utilities.fs" />
+    <Compile Include="ValueConverters.fs" />
+    <Compile Include="AttachedProperties.fs" />
+    <Compile Include="MarkupExtensions.fs" />
+    <Compile Include="WpfXmlnsDefinitions.fs" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Be explicit about the version of FSharp.Core since we mention it in the manual nuget package spec -->
+    <PackageReference Include="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+  <Target Name="BeforeBuild">
+    <MSBuild Projects="..\FsXamlAgain.DesignTime\FsXamlAgain.DesignTime.fsproj" Targets="Restore" />
+    <MSBuild Projects="..\FsXamlAgain.DesignTime\FsXamlAgain.DesignTime.fsproj" Targets="Build" Properties="Configuration=$(Configuration);TargetFramework=netcoreapp3.0" />
+    <MSBuild Projects="..\FsXamlAgain.DesignTime\FsXamlAgain.DesignTime.fsproj" Targets="Build" Properties="Configuration=$(Configuration);TargetFramework=net45" />
+  </Target>
+  <Target Name="AfterBuild">
+    <CreateItem Include="..\FsXamlAgain.DesignTime\bin\$(Configuration)\netcoreapp3.0\*.dll;..\FsXamlAgain.DesignTime\bin\$(Configuration)\netcoreapp3.0\*.pdb">
+      <Output TaskParameter="Include" ItemName="DesignTimeBinaries1" />
+    </CreateItem>
+    <Copy SourceFiles="@(DesignTimeBinaries1)" DestinationFolder="$(OutputPath)/../typeproviders/fsharp41/netcoreapp3.0" />
+    <CreateItem Include="..\FsXamlAgain.DesignTime\bin\$(Configuration)\net45\*.dll;..\FsXamlAgain.DesignTime\bin\$(Configuration)\net45\*.pdb">
+      <Output TaskParameter="Include" ItemName="DesignTimeBinaries2" />
+    </CreateItem>
+    <Copy SourceFiles="@(DesignTimeBinaries2)" DestinationFolder="$(OutputPath)/../typeproviders/fsharp41/net45" />
+  </Target>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

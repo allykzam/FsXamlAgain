@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Type="http://schemas.microsoft.com/packaging/2010/07/manifest" Target="/NUnit.Extension.TeamCityEventListener.nuspec" Id="R91e4a17fd9ee4121" />
+  <Relationship Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="/package/services/metadata/core-properties/c2d549b418084eb9be788fccbe20950c.psmdcp" Id="R1c185e574bfd42f7" />
+</Relationships>
